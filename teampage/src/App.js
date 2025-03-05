@@ -1,20 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Header from "./components/Header";
 
 const App = () => {
   return (
-    <Router>
+    <Router> {/* 최상위에서 감싸기 */}
       <Header />
-      <main style={{ minHeight: "80vh", padding: "20px" }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
-      </main>
-      <Footer />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
     </Router>
   );
 };
