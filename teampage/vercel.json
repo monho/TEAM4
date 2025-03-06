@@ -1,9 +1,0 @@
-{
-    "rewrites": [
-      {
-        "source": "/api/members",
-        "destination": "http://duswns1627.cafe24.com/members"
-      }
-    ]
-  }
-  
