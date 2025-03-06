@@ -61,8 +61,9 @@ const ModalOverlay = styled.div`
     justify-content: center;
     align-items: center;
 `;
+
 const ModalContent = styled.div`
-    width: 400px; /* 모달 크기 고정 */
+    width: 400px;
     max-width: 90%;
     background: white;
     padding: 20px;
@@ -74,14 +75,6 @@ const ModalContent = styled.div`
     align-items: center;
 `;
 
-const FormContainer = styled.form`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center; /* 버튼과 입력 필드를 중앙 정렬 */
-`;
-
 const InputField = styled.input`
     width: 100%;
     max-width: 360px;
@@ -89,7 +82,7 @@ const InputField = styled.input`
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
-    box-sizing: border-box; /* 패딩 포함 너비 유지 */
+    box-sizing: border-box;
     margin-bottom:10px;
 `;
 
@@ -140,21 +133,19 @@ const CloseButton = styled.button`
     cursor: pointer;
     font-size: 16px;
     box-sizing: border-box;
-
     &:hover {
         background: #ff0000;
     }
 `;
-
-const Header = () => {
+const Header = ({ setRefreshTrigger }) => { // ✅ props에서 상태 변경 함수 받기
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
-        name: "",
-        role: "팀원", // 기본값
-        workStyle: "",
-        mbti: "",
-        hobby: "",
-        goal: "",
+        MEMBER_NAME: "",
+        MEMBER_RANK: "팀원",
+        MEMBER_STYLE: "",
+        MEMBER_MBTI: "",
+        MEMBER_HOBBY: "",
+        MEMBER_OBJECTIVE: "",
         photo: null
     });
 
@@ -167,10 +158,36 @@ const Header = () => {
         setFormData({ ...formData, photo: e.target.files[0] });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("등록된 데이터:", formData);
-        setIsModalOpen(false); // 제출 후 모달 닫기
+        const formDataToSend = new FormData();
+        formDataToSend.append("MEMBER_NAME", formData.MEMBER_NAME);
+        formDataToSend.append("MEMBER_RANK", formData.MEMBER_RANK);
+        formDataToSend.append("MEMBER_MBTI", formData.MEMBER_MBTI);
+        formDataToSend.append("MEMBER_STYLE", formData.MEMBER_STYLE);
+        formDataToSend.append("MEMBER_OBJECTIVE", formData.MEMBER_OBJECTIVE);
+        formDataToSend.append("MEMBER_HOBBY", formData.MEMBER_HOBBY);
+
+        if (formData.photo) {
+            formDataToSend.append("photo", formData.photo);
+        }
+
+        try {
+            const response = await fetch("http://duswns1627.cafe24.com/members", {
+                method: "POST",
+                body: formDataToSend
+            });
+
+            if (response.ok) {
+                alert("팀원이 성공적으로 등록되었습니다!");
+                setIsModalOpen(false);
+                setRefreshTrigger(prev => !prev); // ✅ About.js의 useEffect가 실행되도록 상태 변경
+            } else {
+                alert("등록 실패!");
+            }
+        } catch (error) {
+            alert("서버 오류: " + error.message);
+        }
     };
 
     return (
@@ -194,69 +211,16 @@ const Header = () => {
                     <ModalContent onClick={(e) => e.stopPropagation()}>
                         <h2>팀원 등록</h2>
                         <form onSubmit={handleSubmit}>
-                            <InputField 
-                                type="text" 
-                                name="name" 
-                                placeholder="이름" 
-                                value={formData.name} 
-                                onChange={handleChange} 
-                                required 
-                            />
-
-                            <SelectField 
-                                name="role" 
-                                value={formData.role} 
-                                onChange={handleChange} 
-                                required
-                            >
+                            <InputField type="text" name="MEMBER_NAME" placeholder="이름" value={formData.MEMBER_NAME} onChange={handleChange} required />
+                            <SelectField name="MEMBER_RANK" value={formData.MEMBER_RANK} onChange={handleChange} required>
                                 <option value="팀원">팀원</option>
                                 <option value="팀장">팀장</option>
                             </SelectField>
-
-                            <InputField 
-                                type="text" 
-                                name="workStyle" 
-                                placeholder="업무 스타일" 
-                                value={formData.workStyle} 
-                                onChange={handleChange} 
-                                required 
-                            />
-
-                            <InputField 
-                                type="text" 
-                                name="mbti" 
-                                placeholder="MBTI" 
-                                value={formData.mbti} 
-                                onChange={handleChange} 
-                                required 
-                            />
-
-                            <InputField 
-                                type="text" 
-                                name="hobby" 
-                                placeholder="취미" 
-                                value={formData.hobby} 
-                                onChange={handleChange} 
-                                required 
-                            />
-
-                            <InputField 
-                                type="text" 
-                                name="goal" 
-                                placeholder="목표" 
-                                value={formData.goal} 
-                                onChange={handleChange} 
-                                required 
-                            />
-
-                            <FileInput 
-                                type="file" 
-                                name="photo" 
-                                accept="image/*" 
-                                onChange={handleFileChange} 
-                                required 
-                            />
-
+                            <InputField type="text" name="MEMBER_STYLE" placeholder="업무 스타일" value={formData.MEMBER_STYLE} onChange={handleChange} required />
+                            <InputField type="text" name="MEMBER_MBTI" placeholder="MBTI" value={formData.MEMBER_MBTI} onChange={handleChange} required />
+                            <InputField type="text" name="MEMBER_HOBBY" placeholder="취미" value={formData.MEMBER_HOBBY} onChange={handleChange} required />
+                            <InputField type="text" name="MEMBER_OBJECTIVE" placeholder="목표" value={formData.MEMBER_OBJECTIVE} onChange={handleChange} required />
+                            <FileInput type="file" name="photo" accept="image/*" onChange={handleFileChange} required />
                             <SubmitButton type="submit">등록</SubmitButton>
                         </form>
                         <CloseButton onClick={() => setIsModalOpen(false)}>닫기</CloseButton>

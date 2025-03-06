@@ -1,31 +1,29 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import P1 from "../assets/1.png";
-
 const AboutWarp = styled.div`
-    width:100%;
-    height:75px;
-    display:flex;
-    background-color:#FFF;
+    width: 100%;
+    display: flex;
+    background-color: #FFF;
     justify-content: center;
 `;
 
 const AboutInner = styled.div`
-    width:1520px;
-    display:flex;
+    width: 1520px;
+    display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap:15px;
+    gap: 15px;
 `;
 
 const TeamItem = styled.div`
-    width : 300px;
-    height : 450px;
-    border : 1px solid #eee;
+    width: 300px;
+    height: 450px;
+    border: 1px solid #eee;
     border-radius: 12px;
-    display:flex;
-    flex-direction: column;  /* 세로 정렬 */
-    justify-content: space-between; /* 내부 요소를 위쪽과 아래쪽으로 정렬 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
     margin-top: 25px;
     padding: 20px;
@@ -33,21 +31,20 @@ const TeamItem = styled.div`
 
 const PropileTop = styled.div`
     width: 100%;
-    height: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 `;
 
 const PropileTItle = styled.p`
-  color :#666;
-  font-size:13px;
+  color: #666;
+  font-size: 13px;
 `;
 
 const ProfileImage = styled.img`
     object-fit: cover;
     border-radius: 50%;
-    width:250px;
+    width: 250px;
 `;
 
 const ProfileMiddle = styled.div`
@@ -55,12 +52,12 @@ const ProfileMiddle = styled.div`
     align-items: center;
     flex-direction: column;
     justify-content: center;
-    flex-grow: 1; /* 남는 공간을 모두 차지하여 버튼을 아래로 밀어냄 */
+    flex-grow: 1;
 `;
 
 const NameArea = styled.div`
-    display:flex;
-    gap:5px;
+    display: flex;
+    gap: 5px;
     margin-top: 10px;
     align-items: center;
 `;
@@ -69,116 +66,116 @@ const NameText = styled.p`
     font-size: 24px;
     font-weight: 700;
     color: #333;
-    margin:0px;
+    margin: 0px;
 `;
 
 const Bage = styled.p`
-    margin:0px;
+    margin: 0px;
     font-size: 16px;
     font-weight: normal;
     color: #666;
 `;
 
-const ViewinfoBtn = styled.a`
+const ViewinfoBtn = styled.button`
     width: 100%;
     height: 40px;
-    background-color: #292929;;
+    background-color: #292929;
     color: #FFF;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 6px;
-    margin-top: auto; /* 자동으로 아래쪽으로 정렬 */
-    text-decoration: none;
-
+    margin-top: auto;
+    border: none;
+    cursor: pointer;
 
     &:hover {
-        background-color:rgb(36, 36, 36);
+        background-color: rgb(36, 36, 36);
     }
 `;
 
-const BottomBtn = styled.div`
-  width : 100%;
-  display:flex;
-`
+// ✅ 모달 스타일
+const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
 
-const About = () => {
+const ModalContent = styled.div`
+    width: 400px;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
+const CloseButton = styled.button`
+    width: 100px;
+    background: #ff5252;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+
+    &:hover {
+        background: #ff0000;
+    }
+`;
+const About = ({ refreshTrigger }) => {
+  const [members, setMembers] = useState([]);
+
+  const fetchMembers = () => {
+      fetch("http://duswns1627.cafe24.com/members")
+          .then(response => response.json())
+          .then(data => {
+              if (Array.isArray(data)) {
+                  setMembers(data);
+              } else {
+                  console.error("API 응답이 배열이 아닙니다.", data);
+              }
+          })
+          .catch(error => console.error("데이터 가져오기 실패:", error));
+  };
+
+  useEffect(() => {
+      fetchMembers();
+  }, [refreshTrigger]); // ✅ refreshTrigger 변경 시 데이터를 새로 불러옴
+
   return (
-    <AboutWarp>
-      <AboutInner>
-        <TeamItem>
-          <PropileTop>
-            <PropileTItle>Team portrait</PropileTItle>
-            <PropileTItle>ENTJ</PropileTItle>
-          </PropileTop>
-          <ProfileMiddle>
-            <ProfileImage src={P1} />
-            <NameArea>
-                <NameText>유일송</NameText>
-                <Bage>팀장</Bage>
-            </NameArea>
-          </ProfileMiddle>
-          <ViewinfoBtn href="#">자세히 보기</ViewinfoBtn>
-        </TeamItem>
-        <TeamItem>
-          <PropileTop>
-            <PropileTItle>Team portrait</PropileTItle>
-            <PropileTItle>ENTJ</PropileTItle>
-          </PropileTop>
-          <ProfileMiddle>
-            <ProfileImage src={P1} />
-            <NameArea>
-                <NameText>유일송</NameText>
-                <Bage>팀장</Bage>
-            </NameArea>
-          </ProfileMiddle>
-          <ViewinfoBtn href="#">자세히 보기</ViewinfoBtn>
-        </TeamItem>
-        <TeamItem>
-          <PropileTop>
-            <PropileTItle>Team portrait</PropileTItle>
-            <PropileTItle>ENTJ</PropileTItle>
-          </PropileTop>
-          <ProfileMiddle>
-            <ProfileImage src={P1} />
-            <NameArea>
-                <NameText>유일송</NameText>
-                <Bage>팀장</Bage>
-            </NameArea>
-          </ProfileMiddle>
-          <ViewinfoBtn href="#">자세히 보기</ViewinfoBtn>
-        </TeamItem>
-        <TeamItem>
-          <PropileTop>
-            <PropileTItle>Team portrait</PropileTItle>
-            <PropileTItle>ENTJ</PropileTItle>
-          </PropileTop>
-          <ProfileMiddle>
-            <ProfileImage src={P1} />
-            <NameArea>
-                <NameText>유일송</NameText>
-                <Bage>팀장</Bage>
-            </NameArea>
-          </ProfileMiddle>
-          <ViewinfoBtn href="#">자세히 보기</ViewinfoBtn>
-        </TeamItem>
-        <TeamItem>
-          <PropileTop>
-            <PropileTItle>Team portrait</PropileTItle>
-            <PropileTItle>ENTJ</PropileTItle>
-          </PropileTop>
-          <ProfileMiddle>
-            <ProfileImage src={P1} />
-            <NameArea>
-                <NameText>유일송</NameText>
-                <Bage>팀장</Bage>
-            </NameArea>
-          </ProfileMiddle>
-          <ViewinfoBtn href="#">자세히 보기</ViewinfoBtn>
-        </TeamItem>
-      </AboutInner>
-    </AboutWarp>
+      <AboutWarp>
+          <AboutInner>
+              {members.map((member, index) => (
+                  <TeamItem key={index}>
+                      <PropileTop>
+                          <PropileTItle>Team portrait</PropileTItle>
+                          <PropileTItle>{member.MEMBER_MBTI || "Unknown"}</PropileTItle>
+                      </PropileTop>
+                      <ProfileMiddle>
+                          <ProfileImage src={member.photo_url} alt={member.MEMBER_NAME} />
+                          <NameArea>
+                              <NameText>{member.MEMBER_NAME}</NameText>
+                              <Bage>{member.MEMBER_RANK}</Bage>
+                          </NameArea>
+                      </ProfileMiddle>
+                      <ViewinfoBtn>자세히 보기</ViewinfoBtn>
+                  </TeamItem>
+              ))}
+          </AboutInner>
+      </AboutWarp>
   );
 };
 

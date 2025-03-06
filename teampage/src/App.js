@@ -1,18 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom"; // ✅ Navigate 추가
+
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Header from "./components/Header";
 
-const App = () => {
+function App() {
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
+
   return (
-    <Router> {/* 최상위에서 감싸기 */}
-      <Header />
+    <Router>
+      <Header setRefreshTrigger={setRefreshTrigger} />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/" element={<Navigate to="/about" />} />
+        <Route path="/about" element={<About refreshTrigger={refreshTrigger} />} />
       </Routes>
     </Router>
   );
-};
+}
 
 export default App;
